@@ -14,15 +14,12 @@ class API
     song = Echonest::Song.new('BIPUBB0USDUU2XMCL')
 
     params = { song_max_hotttnesss: "1", results: 10}
-    #params = { rank_type: "familiarity"}
     song.search(params).map do |track|
-       track[:title] 
+       track[:title] + ": " + track[:artist_name]
     end 
   end
 
   def self.lastfm
-    # Put your real LastFM code here
-    
     api_key = "8161363efe3a0745d841750184887854"
     url = "http://ws.audioscrobbler.com/2.0/?method=chart.gettoptracks&api_key=#{api_key}&format=json&page=1&limit=10"
 
@@ -30,17 +27,14 @@ class API
     json= Net::HTTP.get_response(url).body
     results = JSON.parse(json)
     songs = results["tracks"]["track"]
-    #return songs
-  	songs.map do |track|
-   		  track["artist"]["name"] + ": " + track["name"]
+    songs.map do |track|
+      track["artist"]["name"] + ": " + track["name"]
     end
   end
 
   def self.grooveshark
-    # Replace amazon with real API names and code
-    
     client = Grooveshark::Client.new
- 
+
     popular = client.popular_songs.uniq[0..9]
     songs = popular.map do |listing|
       song = listing.to_s.split(/ - /)[1]
@@ -52,14 +46,15 @@ class API
      "#{artist}: #{song}"
     end
   end
-  
+
   def self.rdio
-    client = RdioApi.new(:consumer_key => "qezrkgg3r52ttvvf42zk68fc", :consumer_secret => "YgbDv5j8CP")
+    client = RdioApi.new(:consumer_key => "qezrkgg3r52ttvvf42zk68fc",
+                         :consumer_secret => "YgbDv5j8CP")
 
     response = client.getTopCharts(:type => "Track")
-    popular = response.map do |item|
-      song = "#{item.artist}" ": " " #{item.name}"
-    end[0..9]
+    popular = response[0..9].map do |item|
+      item.artist + ": " + item.name
+    end
   end
 end
 
@@ -69,7 +64,7 @@ helpers do
     wanted.each do |api|
       results.concat(API.send(api.downcase.to_sym))
     end
-    return results.uniq
+    return results.uniq.sort
   end
 end
 
@@ -82,6 +77,3 @@ post '/' do
   @results = get_all(params[:wanted])
   erb :results
 end
-
-
-
