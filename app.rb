@@ -16,7 +16,7 @@ class API
     params = { song_max_hotttnesss: "1", results: 10}
     #params = { rank_type: "familiarity"}
     song.search(params).map do |track|
-       track[:title] 
+       track[:title] + ": " + track[:artist_name]
     end 
   end
 
@@ -81,6 +81,14 @@ end
 post '/' do
   @results = get_all(params[:wanted])
   erb :results
+end
+
+get '/about' do 
+  erb :about
+end
+
+get '/faq' do
+  erb :faq
 end
 
 
