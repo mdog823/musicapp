@@ -1,5 +1,11 @@
-<ul>
+<ul id="results">
+	<ul>
     <% @results.each do |res| %>
         <li><%= res %></li>
     <% end %>
+	</ul>
 </ul>
+
+<form action="/">
+    <input type="submit" value="Search Again!">
+</form>
